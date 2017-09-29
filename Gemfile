@@ -12,6 +12,7 @@ gem 'puma', '~> 3.7'
 gem 'annotate'
 gem 'active_model_serializers'
 gem 'rack-cors'
+gem 'rubyzoho'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
