@@ -13,6 +13,8 @@ gem 'annotate'
 gem 'active_model_serializers'
 gem 'rack-cors'
 gem 'rubyzoho'
+gem 'oj'
+gem 'ransack'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170929190918) do
+ActiveRecord::Schema.define(version: 20170930031044) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20170929190918) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["company"], name: "index_leads_on_company"
+    t.index ["lead_source"], name: "index_leads_on_lead_source"
     t.index ["mobile"], name: "index_leads_on_mobile"
     t.index ["name"], name: "index_leads_on_name"
     t.index ["phone"], name: "index_leads_on_phone"

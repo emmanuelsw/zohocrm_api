@@ -1,26 +1,30 @@
 class Api::V1::LeadsController < ApplicationController
 
 	def index
-		lead = RubyZoho::Crm::Lead.find_by_email('Carissa-batman@yahoo.com')
-		render json: lead
+		@leads = Lead.select(:id, :name, :company, :phone, :mobile, :lead_source)
+		render json: Oj.dump(json_for(@leads), mode: :compat)
 	end
 
 	def create
-		l = RubyZoho::Crm::Lead.find_by_email('Carissa-batman@yahoo.com').first
+		lead = RubyZoho::Crm::Lead.find_by_leadid('2800097000000135254').first
 		
 		@lead = Lead.new
-		@lead.name = l.full_name
-		@lead.company = l.company
-		@lead.phone = l.phone
-		@lead.mobile = l.mobile
-		@lead.lead_source = l.lead_source
+		@lead.name = lead.full_name
+		@lead.company = lead.company
+		@lead.phone = lead.phone
+		@lead.mobile = lead.mobile
+		@lead.lead_source = lead.lead_source
 
 		if @lead.save
-			render json: @lead, status: :created
+			render json: Oj.dump(json_for(@lead), mode: :compat), status: :created
 		else
 			render json: { errors: @lead.errors }, status: :unprocessable_entity
 		end
+	end
 
+	def search_by_leadsource
+		@leadsources = Lead.ransack(lead_source_cont: params[:q]).result(distinct: true)
+		render json: Oj.dump(json_for(@leadsources)), status: :ok
 	end
 
 	def lead_params
