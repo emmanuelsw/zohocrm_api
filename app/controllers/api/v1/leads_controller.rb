@@ -6,7 +6,7 @@ class Api::V1::LeadsController < ApplicationController
 	end
 
 	def create
-		lead = RubyZoho::Crm::Lead.find_by_leadid('2800097000000135254').first
+		lead = RubyZoho::Crm::Lead.find_by_leadid('2800097000000131607').first
 		
 		@lead = Lead.new
 		@lead.name = lead.full_name
@@ -22,9 +22,14 @@ class Api::V1::LeadsController < ApplicationController
 		end
 	end
 
+	def search
+		@leads = Lead.ransack(lead_cont: params[:q]).result(distinct: true)
+		render json: Oj.dump(@leads.as_json, mode: :compat), status: :ok
+	end
+
 	def search_by_leadsource
 		@leadsources = Lead.ransack(lead_source_cont: params[:q]).result(distinct: true)
-		render json: Oj.dump(json_for(@leadsources)), status: :ok
+		render json: Oj.dump(@leadsources.as_json, mode: :compat), status: :ok
 	end
 
 	def lead_params
