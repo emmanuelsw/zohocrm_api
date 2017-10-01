@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :leads do
         collection do
+          get 'search_by_phone'
           get 'search_by_leadsource'
           get 'search'
         end

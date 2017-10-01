@@ -28,6 +28,24 @@ class Api::V1::LeadsController < ApplicationController
 		end
 	end
 
+	# Search by phone in the Zoho API
+	def search_by_phone
+		lead = RubyZoho::Crm::Lead.find_by_phone(params[:phone]) if params[:phone].size > 2
+		unless lead.nil?
+			lead = lead.first
+			json = 
+				[
+					name: lead.full_name,
+					phone: lead.phone,
+					lead_id: lead.leadid
+				]
+			
+			render json: Oj.dump(json_for(json), mode: :compat), status: :ok
+		else
+			render json: [], status: :ok
+		end
+	end
+
 	# Search by name, phone or company
 	def search
 		@leads = Lead.ransack(lead_cont: params[:q]).result(distinct: true)
