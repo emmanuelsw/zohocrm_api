@@ -13,6 +13,7 @@ gem 'annotate'
 gem 'active_model_serializers'
 gem 'rack-cors'
 gem 'rubyzoho'
+gem 'kaminari'
 gem 'oj'
 gem 'ransack', github: 'activerecord-hackery/ransack'
 
@@ -26,4 +27,5 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'awesome_print'
+  gem 'faker'
 end

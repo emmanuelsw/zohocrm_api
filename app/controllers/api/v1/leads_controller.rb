@@ -2,13 +2,13 @@ class Api::V1::LeadsController < ApplicationController
 
 	# Fetch all leads
 	def index
-		@leads = Lead.select(:id, :name, :company, :phone, :mobile, :lead_source)
-		render json: Oj.dump(json_for(@leads), mode: :compat)
+		@leads = Lead.filter_page(params[:page], params[:size])
+		render json: Oj.dump(json_for(@leads, meta: pagination(@leads)), mode: :compat)
 	end
 
 	# Add record by Lead ID
 	def create
-		lead = RubyZoho::Crm::Lead.find_by_leadid(params[:lead_id])
+		lead = Lead.add_from_zoho(params[:lead_id])
 		unless lead.nil?
 			lead = lead.first
 			@lead = Lead.new
@@ -19,18 +19,18 @@ class Api::V1::LeadsController < ApplicationController
 			@lead.lead_source = lead.lead_source
 	
 			if @lead.save
-				render json: Oj.dump(json_for(@lead), mode: :compat), status: :created
+				render json: Oj.dump(json_for(@lead), mode: :compat), status: :201
 			else
-				render json: { errors: @lead.errors.full_messages }, status: :unprocessable_entity
+				render json: { errors: @lead.errors.full_messages }, status: 422
 			end
 		else
-			render json: { errors: 'Lead ID does not exist in the Zoho CRM API.' }, status: :unprocessable_entity
+			render json: { errors: 'Lead ID does not exist in the Zoho CRM API.' }, status: 422
 		end
 	end
 
 	# Search by phone in the Zoho API
 	def search_by_phone
-		lead = RubyZoho::Crm::Lead.find_by_phone(params[:phone]) if params[:phone].size > 2
+		lead = Lead.search_from_zoho(params[:phone])
 		unless lead.nil?
 			lead = lead.first
 			json = 
@@ -39,7 +39,6 @@ class Api::V1::LeadsController < ApplicationController
 					phone: lead.phone,
 					lead_id: lead.leadid
 				]
-			
 			render json: Oj.dump(json_for(json), mode: :compat), status: :ok
 		else
 			render json: [], status: :ok
