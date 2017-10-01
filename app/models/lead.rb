@@ -1,6 +1,5 @@
 class Lead < ApplicationRecord
 
-	
 	validates :name, presence: true
 	validates :company, presence: true
 	validates :lead_source, presence: true

@@ -1,10 +1,12 @@
 class Api::V1::LeadsController < ApplicationController
 
+	# Fetch all leads
 	def index
 		@leads = Lead.select(:id, :name, :company, :phone, :mobile, :lead_source)
 		render json: Oj.dump(json_for(@leads), mode: :compat)
 	end
 
+	# Add record by Lead ID
 	def create
 		lead = RubyZoho::Crm::Lead.find_by_leadid(params[:lead_id])
 		unless lead.nil?
@@ -19,18 +21,20 @@ class Api::V1::LeadsController < ApplicationController
 			if @lead.save
 				render json: Oj.dump(json_for(@lead), mode: :compat), status: :created
 			else
-				render json: { errors: @lead.errors }, status: :unprocessable_entity
+				render json: { errors: @lead.errors.full_messages }, status: :unprocessable_entity
 			end
 		else
 			render json: { errors: 'Lead ID does not exist in the Zoho CRM API.' }, status: :unprocessable_entity
 		end
 	end
 
+	# Search by name, phone or company
 	def search
 		@leads = Lead.ransack(lead_cont: params[:q]).result(distinct: true)
 		render json: Oj.dump(@leads.as_json, mode: :compat), status: :ok
 	end
 
+	# Search by lead source
 	def search_by_leadsource
 		@leadsources = Lead.ransack(lead_source_cont: params[:q]).result(distinct: true)
 		render json: Oj.dump(@leadsources.as_json, mode: :compat), status: :ok
