@@ -59,7 +59,7 @@ rails s -p 3001 # run server in port 3001
   * **q**: search parameter
   * **page**: number of page (1 by default)
   * **size**: records per page
-* Success response: JSON object
+* Response: JSON object
 ~~~json
 {
     "leads": [
@@ -87,7 +87,7 @@ rails s -p 3001 # run server in port 3001
   * **q**: search parameter
   * **page**: number of page (1 by default)
   * **size**: records per page
-* Success response: JSON object
+* Response: JSON object
 ~~~json
 {
     "leads": [
