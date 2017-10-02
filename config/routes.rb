@@ -9,6 +9,7 @@ Rails.application.routes.draw do
           get 'search'
         end
       end
+      mount ActionCable.server => '/cable'
     end
   end
 

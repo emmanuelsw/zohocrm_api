@@ -6,6 +6,7 @@ class Lead < ApplicationRecord
 	validates :phone, presence: true, length: { maximum: 10 }
 	validates :mobile, presence: true, length: { maximum: 10 }
 
+	after_create :send_actioncable
 	ransack_alias :lead, :name_or_company_or_phone_or_mobile
 
 	def self.filter_page(page, size)
@@ -33,6 +34,11 @@ class Lead < ApplicationRecord
 	private
 	def self.letters?(string)
 		string.chars.any? { |char| ('a'..'z').include? char.downcase }
-  end
+	end
+	
+	def send_actioncable
+		data = {message: self, action:"new lead"}
+		ActionCable.server.broadcast "leads", data
+	end
 
 end
