@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::API
 
+	private
+	
 	# AMS compatible with Oj
 	def json_for(target, options = {})
 		options[:scope] ||= self
@@ -8,12 +10,13 @@ class ApplicationController < ActionController::API
 		data.as_json
 	end
 
+	def render_json(resource, meta: nil, status: :ok)
+		render json: Oj.dump(json_for(resource, meta: meta), mode: :compat), status: status
+	end
+
 	def pagination(collection)
 		{
 			current_page: collection.current_page,
-			next_page: collection.next_page,
-			prev_page: collection.prev_page,
-			total_pages: collection.total_pages,
 			total_count: collection.total_count
 		}
 	end

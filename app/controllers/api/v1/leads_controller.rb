@@ -6,11 +6,13 @@ class Api::V1::LeadsController < ApplicationController
 		render json: Oj.dump(json_for(@leads, meta: pagination(@leads)), mode: :compat)
 	end
 
+
 	# Add record by Lead ID
 	def create
 		lead = Lead.add_from_zoho(params[:lead_id])
 		unless lead.nil?
 			lead = lead.first
+
 			@lead = Lead.new
 			@lead.name = lead.full_name
 			@lead.company = lead.company
@@ -19,17 +21,18 @@ class Api::V1::LeadsController < ApplicationController
 			@lead.lead_source = lead.lead_source
 	
 			if @lead.save
-				render json: Oj.dump(json_for(@lead), mode: :compat), status: :201
+				render_json(@lead, status: 201)
 			else
 				render json: { errors: @lead.errors.full_messages }, status: 422
 			end
 		else
-			render json: { errors: 'Lead ID does not exist in the Zoho CRM API.' }, status: 422
+			render json: { errors: 'Lead ID does not exist.' }, status: 422
 		end
 	end
 
+
 	# Search by phone in the Zoho API
-	def search_by_phone
+	def search_phone
 		lead = Lead.search_from_zoho(params[:phone])
 		unless lead.nil?
 			lead = lead.first
@@ -45,17 +48,20 @@ class Api::V1::LeadsController < ApplicationController
 		end
 	end
 
+
 	# Search by name, phone or company
 	def search
-		@leads = Lead.ransack(lead_cont: params[:q]).result(distinct: true)
-		render json: Oj.dump(@leads.as_json, mode: :compat), status: :ok
+		@leads = Lead.search(params[:page], params[:size], params[:q])
+		render_json(@leads, meta: pagination(@leads))
 	end
 
+
 	# Search by lead source
-	def search_by_leadsource
-		@leadsources = Lead.ransack(lead_source_cont: params[:q]).result(distinct: true)
-		render json: Oj.dump(@leadsources.as_json, mode: :compat), status: :ok
+	def search_leadsource
+		@leads = Lead.search_leadsource(params[:page], params[:size], params[:q])
+		render_json(@leads, meta: pagination(@leads))
 	end
+
 
 	private
 	def lead_params
