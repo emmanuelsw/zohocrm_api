@@ -37,7 +37,7 @@ class Lead < ApplicationRecord
 	end
 	
 	def send_actioncable
-		data = {message: self, action:"new lead"}
+		data = {message: self, action: "new lead"}
 		ActionCable.server.broadcast "leads", data
 	end
 
